@@ -1,4 +1,4 @@
-# Fnn ![example workflow](https://github.com/triole/example/actions/workflows/build.yaml/badge.svg)
+# Fnn ![example workflow](https://github.com/triole/fnn/actions/workflows/build.yaml/badge.svg)
 
 <!-- toc -->
 
