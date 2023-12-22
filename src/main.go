@@ -11,18 +11,25 @@ var (
 func main() {
 	parseArgs()
 	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
+	folder := trimSuf(CLI.Folder)
 
-	lg.Info("run " + appName + " in folder " + CLI.Folder)
+	lg.Info("run "+appName, logseal.F{"folder": folder})
 
-	// detect all, unlimited depth
-	ps := newPaths(CLI.Folder, CLI.Matcher)
-	ps.find(-1)
+	if CLI.Recursive {
+		// detect all, unlimited depth
+		ps := newPaths(folder, CLI.Matcher)
+		ps.find(-1)
 
-	// recurse from high depth to lower
-	for i := ps.MaxDepth; i >= depth(CLI.Folder); i-- {
-		np := newPaths(CLI.Folder, CLI.Matcher)
-		np.find(i)
-		np.normalizeAll()
+		// recurse from high depth to lower
+		for i := ps.MaxDepth; i > depth(folder); i-- {
+			np := newPaths(folder, CLI.Matcher)
+			np.find(i)
+			np.normalizeAll()
+		}
+	} else {
+		ps := newPaths(folder, CLI.Matcher)
+		ps.find(depth(folder) + 1)
+		ps.normalizeAll()
 	}
 
 	if CLI.DryRun {

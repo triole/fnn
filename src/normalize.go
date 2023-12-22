@@ -51,12 +51,24 @@ func initReplacerSchemes() (r tReplacerSchemes) {
 func rename(pth, npth tPath) {
 	oldPath := pathStr(pth)
 	newPath := pathStr(npth)
-	lg.Info("normalize name", logseal.F{
-		"old":       oldPath,
-		"new":       newPath,
-		"is_folder": pth.IsFolder,
-	})
-	if !CLI.DryRun {
-		os.Rename(oldPath, newPath)
+	if oldPath != newPath {
+		lg.Info("rename file", logseal.F{
+			"old":       oldPath,
+			"new":       newPath,
+			"is_folder": pth.IsFolder,
+		})
+		if !CLI.DryRun {
+			os.Rename(oldPath, newPath)
+		}
+	} else {
+		lg.Debug("skip, file name wouldn't change", logseal.F{
+			"old":       oldPath,
+			"new":       newPath,
+			"is_folder": pth.IsFolder,
+		})
 	}
+}
+
+func trimSuf(s string) string {
+	return strings.TrimSuffix(s, string(os.PathSeparator))
 }

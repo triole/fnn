@@ -26,7 +26,7 @@ func (ps *tPaths) find(depthToDetect int) {
 		logseal.F{"error": err},
 	)
 	for _, p := range pathList {
-		pth := strings.TrimSuffix(p, "/")
+		pth := trimSuf(p)
 		inf, err := os.Stat(pth)
 		lg.IfErrError("failed to stat file", logseal.F{
 			"error": err,
@@ -36,7 +36,7 @@ func (ps *tPaths) find(depthToDetect int) {
 			ext := strings.TrimPrefix(path.Ext(pth), ".")
 			pi := tPath{
 				Path:      pth,
-				Folder:    strings.TrimSuffix(strings.Replace(pth, inf.Name(), "", -1), "/"),
+				Folder:    trimSuf(strings.Replace(pth, inf.Name(), "", -1)),
 				Name:      strings.TrimSuffix(inf.Name(), "."+ext),
 				Extension: ext,
 				IsFolder:  inf.IsDir(),
