@@ -54,8 +54,8 @@ Renaming schemes are stored inside the `replacer_schemes.yaml` file that contain
 - rx: "[^a-z0-9_-]+"
   nu: _
 
-- rx: "[_-]+"
-  nu: _
+- rx: "-+"
+  nu: "-"
 
 - rx: _+
   nu: _
