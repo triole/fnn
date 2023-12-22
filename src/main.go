@@ -21,7 +21,7 @@ func main() {
 		ps.find(-1)
 
 		// recurse from high depth to lower
-		for i := ps.MaxDepth; i > depth(folder); i-- {
+		for i := ps.MaxDepth + 1; i > depth(folder); i-- {
 			np := newPaths(folder, CLI.Matcher)
 			np.find(i)
 			np.normalizeAll()
