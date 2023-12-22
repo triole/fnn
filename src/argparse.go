@@ -21,8 +21,9 @@ var (
 )
 
 var CLI struct {
-	RootDir     string `help:"root directory in which to run the renamer, default is current folder" short:"r" default:"${curdir}"`
-	RxMatcher   string `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
+	Folder      string `help:"root folder in which to run the renamer, default is current folder" short:"f" default:"${curdir}"`
+	Matcher     string `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
+	Recursive   bool   `help:"recurse into sub directories, default is none" short:"r"`
 	LogFile     string `help:"log file" short:"l" default:"/dev/stdout"`
 	LogLevel    string `help:"log level" short:"e" default:"info" enum:"trace,debug,info,error"`
 	LogNoColors bool   `help:"disable output colours, print plain text" short:"c"`

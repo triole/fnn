@@ -12,15 +12,15 @@ func main() {
 	parseArgs()
 	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
 
-	lg.Info("run " + appName + " in folder " + CLI.RootDir)
+	lg.Info("run " + appName + " in folder " + CLI.Folder)
 
 	// detect all, unlimited depth
-	ps := newPaths(CLI.RootDir, CLI.RxMatcher)
+	ps := newPaths(CLI.Folder, CLI.Matcher)
 	ps.find(-1)
 
 	// recurse from high depth to lower
-	for i := ps.MaxDepth; i >= depth(CLI.RootDir); i-- {
-		np := newPaths(CLI.RootDir, CLI.RxMatcher)
+	for i := ps.MaxDepth; i >= depth(CLI.Folder); i-- {
+		np := newPaths(CLI.Folder, CLI.Matcher)
 		np.find(i)
 		np.normalizeAll()
 	}
