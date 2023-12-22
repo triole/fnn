@@ -2,12 +2,69 @@
 
 <!-- toc -->
 
+- [Rename schemes](#rename-schemes)
+- [```go mdox-exec=&quot;cat src/replacer_schemes.yaml&quot;](#go-mdox-execcat-srcreplacer_schemesyaml)
 - [Help](#help)
 - [Disclaimer](#disclaimer)
 
 <!-- /toc -->
 
 File name normalizer that renames files and folder removing special characters. Contains a mighty chunk of extra opinionated renaming rules.
+
+## Rename schemes
+
+Renaming schemes are stored inside the `replacer_schemes.yaml` file that contains a list of replace rules. A single rule consists of a regular expression and a replacement. All rules are processed in order from top to bottom. Here is what they look like.
+
+```go mdox-exec="cat src/replacer_schemes.yaml"
+---
+- rx: ä
+  nu: ae
+
+- rx: ö
+  nu: oe
+
+- rx: ü
+  nu: ue
+
+- rx: ß
+  nu: ss
+
+- rx: (à|á|â|ã|å)
+  nu: a
+
+- rx: (è|é|ê|ë)
+  nu: e
+
+- rx: (í|ì|î|ĩ|ï)
+  nu: i
+
+- rx: (ò|ó|ô|õ)
+  nu: o
+
+- rx: (ù|ú|û)
+  nu: u
+
+- rx: ç
+  nu: c
+
+- rx: " "
+  nu: _
+
+- rx: "[^a-z0-9_-]+"
+  nu: _
+
+- rx: "[_-]+"
+  nu: _
+
+- rx: _+
+  nu: _
+
+- rx: _$
+  nu: ""
+
+- rx: "([a-z]+)_([0-9])"
+  nu: "$1$2"
+```
 
 ## Help
 
