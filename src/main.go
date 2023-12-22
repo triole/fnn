@@ -25,4 +25,8 @@ func main() {
 		np.normalizeAll()
 	}
 
+	if CLI.DryRun {
+		lg.Info("dry run, no files were renamed")
+	}
+
 }
