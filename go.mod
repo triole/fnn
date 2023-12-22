@@ -5,6 +5,7 @@ go 1.21.5
 require (
 	github.com/alecthomas/kong v0.8.1
 	github.com/triole/logseal v0.0.0-20231013173240-407e369f3abe
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
