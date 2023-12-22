@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -52,16 +53,24 @@ func rename(pth, npth tPath) {
 	oldPath := pathStr(pth)
 	newPath := pathStr(npth)
 	if oldPath != newPath {
-		lg.Info("rename file", logseal.F{
-			"old":       oldPath,
-			"new":       newPath,
-			"is_folder": pth.IsFolder,
-		})
-		if !CLI.DryRun {
-			err := os.Rename(oldPath, newPath)
-			if err != nil {
-				lg.Error("rename file failed", logseal.F{"error": err})
+		if !exists(newPath) {
+			lg.Info("rename file", logseal.F{
+				"old":       oldPath,
+				"new":       newPath,
+				"is_folder": pth.IsFolder,
+			})
+			if !CLI.DryRun {
+				err := os.Rename(oldPath, newPath)
+				if err != nil {
+					lg.Error("rename file failed", logseal.F{"error": err})
+				}
 			}
+		} else {
+			lg.Warn("won't rename, target path exists", logseal.F{
+				"old":       oldPath,
+				"new":       newPath,
+				"is_folder": pth.IsFolder,
+			})
 		}
 	} else {
 		lg.Debug("skip, file name wouldn't change", logseal.F{
@@ -70,6 +79,11 @@ func rename(pth, npth tPath) {
 			"is_folder": pth.IsFolder,
 		})
 	}
+}
+
+func exists(filePath string) bool {
+	_, error := os.Stat(filePath)
+	return !errors.Is(error, os.ErrNotExist)
 }
 
 func trimSuf(s string) string {
