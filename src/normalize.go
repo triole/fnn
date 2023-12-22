@@ -58,7 +58,10 @@ func rename(pth, npth tPath) {
 			"is_folder": pth.IsFolder,
 		})
 		if !CLI.DryRun {
-			os.Rename(oldPath, newPath)
+			err := os.Rename(oldPath, newPath)
+			if err != nil {
+				lg.Error("rename file failed", logseal.F{"error": err})
+			}
 		}
 	} else {
 		lg.Debug("skip, file name wouldn't change", logseal.F{

@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"path"
+)
 
 type tPath struct {
 	Path      string
@@ -48,8 +51,9 @@ func toStr(b bool) string {
 }
 
 func pathStr(pth tPath) string {
+	p := path.Join(pth.Folder, pth.Name)
 	if pth.Extension == "" {
-		return fmt.Sprintf("%s/%s", pth.Folder, pth.Name)
+		return p
 	}
-	return fmt.Sprintf("%s/%s.%s", pth.Folder, pth.Name, pth.Extension)
+	return fmt.Sprintf("%s.%s", p, pth.Extension)
 }
