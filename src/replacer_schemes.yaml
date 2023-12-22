@@ -8,6 +8,9 @@
 - rx: ü
   nu: ue
 
+- rx: ß
+  nu: ss
+
 - rx: (à|á|â|ã|å)
   nu: a
 
