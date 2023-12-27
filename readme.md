@@ -1,4 +1,4 @@
-# Fnn ![example workflow](https://github.com/triole/fnn/actions/workflows/build.yaml/badge.svg)
+# Fnn ![test](https://github.com/triole/fnn/actions/workflows/test.yaml/badge.svg) ![build](https://github.com/triole/fnn/actions/workflows/build.yaml/badge.svg)
 
 <!-- toc -->
 
@@ -54,6 +54,9 @@ Renaming schemes are stored inside the `replacer_schemes.yaml` file that contain
 - rx: "[^a-z0-9_-]+"
   nu: _
 
+- rx: (_-|-_)
+  nu: _
+
 - rx: "-+"
   nu: "-"
 
@@ -63,7 +66,7 @@ Renaming schemes are stored inside the `replacer_schemes.yaml` file that contain
 - rx: _$
   nu: ""
 
-- rx: "([a-z]+)_([0-9])"
+- rx: "([a-z]+)_([0-9]{1,2})$"
   nu: "$1$2"
 ```
 
