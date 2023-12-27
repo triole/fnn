@@ -17,8 +17,9 @@ func TestNormalize(t *testing.T) {
 	validateNormalize("òóôõ", "txt", "oooo", "txt", rs, t)
 	validateNormalize("ùúû", "txt", "uuu", "txt", rs, t)
 	validateNormalize("ç", "txt", "c", "txt", rs, t)
-	validateNormalize("hello there   111", "txt", "hello_there111", "txt", rs, t)
-
+	validateNormalize("hello there   11", "txt", "hello_there11", "txt", rs, t)
+	validateNormalize("hello there   222", "txt", "hello_there_222", "txt", rs, t)
+	validateNormalize("hello there   3333", "txt", "hello_there_3333", "txt", rs, t)
 }
 
 func validateNormalize(inpName, inpExt, expName, expExt string, rs tReplacerSchemes, t *testing.T) {
