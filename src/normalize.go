@@ -34,6 +34,11 @@ func (ps *tPaths) normalizeAll() (r string) {
 func normalize(pth tPath, replacerSchemes tReplacerSchemes) (r tPath) {
 	r = pth
 	r.Name = strings.ToLower(r.Name)
+	if r.IsFolder {
+		r.Name = strings.Replace(r.Name, ".", "_", -1)
+		r.Name = r.Name + r.Extension
+		r.Extension = ""
+	}
 	r.Extension = strings.ToLower(r.Extension)
 	for _, rs := range replacerSchemes {
 		r.Name = rxReplaceAll(r.Name, rs.Rx, rs.Nu)
