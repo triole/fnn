@@ -20,6 +20,7 @@ func TestNormalize(t *testing.T) {
 	validateNormalize("hello there   11", "txt", "hello_there11", "txt", rs, t)
 	validateNormalize("hello there   222", "txt", "hello_there_222", "txt", rs, t)
 	validateNormalize("hello there   3333", "txt", "hello_there_3333", "txt", rs, t)
+	validateNormalize("Hello HereAndThere    3333", "txt", "hello_here_and_there_3333", "txt", rs, t)
 }
 
 func validateNormalize(inpName, inpExt, expName, expExt string, rs tReplacerSchemes, t *testing.T) {
@@ -29,7 +30,7 @@ func validateNormalize(inpName, inpExt, expName, expExt string, rs tReplacerSche
 	if res.Extension != exp.Extension || res.Name != exp.Name {
 		t.Errorf(
 			"\ntest normalize path validation failed"+
-				"\ninput       %s\nresult      %s\nexpectation %s",
+				"\ninp %s\nres %s\nexp %s",
 			printPath(inp), printPath(res), printPath(exp),
 		)
 	}

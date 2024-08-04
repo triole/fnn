@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/triole/logseal"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 
 	_ "embed"
 )
@@ -33,6 +33,7 @@ func (ps *tPaths) normalizeAll() (r string) {
 
 func normalize(pth tPath, replacerSchemes tReplacerSchemes) (r tPath) {
 	r = pth
+	r.Name = toSnakeCase(r.Name)
 	r.Name = strings.ToLower(r.Name)
 	if r.IsFolder {
 		r.Name = strings.Replace(r.Name, ".", "_", -1)
