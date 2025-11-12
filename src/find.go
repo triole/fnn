@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path"
@@ -68,7 +67,6 @@ func (ps *tPaths) find(depthToDetect int) {
 		"no_files": len(ps.List),
 	},
 	)
-	return
 }
 
 func visit(files *[]string, rx string) filepath.WalkFunc {
@@ -81,16 +79,6 @@ func visit(files *[]string, rx string) filepath.WalkFunc {
 		}
 		return nil
 	}
-}
-
-func getAllMaxDepthFolders(paths tPaths) (r tPathList) {
-	fmt.Printf("%+v\n", paths.MaxDepth)
-	for _, pth := range paths.List {
-		if pth.IsFolder && pth.Depth == paths.MaxDepth {
-			r = append(r, pth)
-		}
-	}
-	return
 }
 
 func depth(pth string) int {
