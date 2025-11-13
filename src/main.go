@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	lg = logseal.Init("debug", nil, true, false)
+	lg logseal.Logseal
 )
 
 func main() {
