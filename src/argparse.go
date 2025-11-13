@@ -24,10 +24,10 @@ var CLI struct {
 	Folder      string `help:"root folder in which to run the renamer, default is current folder" short:"f" default:"${curdir}"`
 	Matcher     string `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
 	Recursive   bool   `help:"recurse into sub directories, default is none" short:"r"`
-	LogFile     string `help:"log file" short:"l" default:"/dev/stdout"`
-	LogLevel    string `help:"log level" short:"e" default:"info" enum:"trace,debug,info,error"`
-	LogNoColors bool   `help:"disable output colours, print plain text" short:"c"`
-	LogJSON     bool   `help:"enable json log, instead of text one" short:"j"`
+	LogFile     string `help:"log file" default:"/dev/stdout"`
+	LogLevel    string `help:"log level" default:"info" enum:"trace,debug,info,error,fatal"`
+	LogNoColors bool   `help:"disable output colours, print plain text"`
+	LogJSON     bool   `help:"enable json log, instead of text one"`
 	DryRun      bool   `help:"debug mode" short:"n"`
 	VersionFlag bool   `help:"display version" short:"V"`
 }
