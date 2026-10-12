@@ -3,8 +3,6 @@ package main
 import (
 	"regexp"
 	"strings"
-
-	"github.com/triole/logseal"
 )
 
 var (
@@ -12,13 +10,8 @@ var (
 	matchAllCap   = regexp.MustCompile("([a-z0-9])([A-Z])")
 )
 
-func rxMatch(rx string, str string) bool {
-	re, err := regexp.Compile(rx)
-	if err != nil {
-		lg.Error("invalid regex pattern", logseal.F{"error": err, "pattern": rx})
-		return false
-	}
-	return re.MatchString(str)
+func rxMatch(compiledRx *regexp.Regexp, str string) bool {
+	return compiledRx.MatchString(str)
 }
 
 func rxReplaceAll(basestring string, regex *regexp.Regexp, newstring string) (r string) {

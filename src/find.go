@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -39,12 +40,11 @@ func (ps *tPaths) find(depthToDetect int) error {
 			ps.MaxDepth = pi.Depth
 		}
 	}
-	
+
 	sort.Sort(tPathList(ps.List))
 	lg.Info("got find results", logseal.F{
 		"depth":    depthToDetect,
 		"folder":   ps.RootDir,
-		"matcher":  ps.RxMatcher,
 		"no_files": len(ps.List),
 	})
 	return nil
@@ -58,12 +58,12 @@ func parentDir(p string) string {
 	return d
 }
 
-func visitPaths(paths *[]tPath, rx string) filepath.WalkFunc {
+func visitPaths(paths *[]tPath, compiledRx *regexp.Regexp) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if rxMatch(rx, path) {
+		if rxMatch(compiledRx, path) {
 			*paths = append(*paths, tPath{
 				Path: path,
 				Info: info,

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"regexp"
+
 	"github.com/triole/logseal"
 )
 
@@ -13,11 +15,17 @@ func main() {
 	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
 	folder := trimSuf(CLI.Folder)
 
+	// Pre-compile the matcher regex once
+	compiledMatcher, err := regexp.Compile(CLI.Matcher)
+	if err != nil {
+		lg.Fatal("invalid regex pattern", logseal.F{"error": err, "pattern": CLI.Matcher})
+	}
+
 	lg.Info("run "+appName, logseal.F{"folder": folder})
 
 	if CLI.Recursive {
 		// scan tree once to get ALL paths
-		ops := newPaths(folder, CLI.Matcher)
+		ops := newPaths(folder, compiledMatcher)
 		if err := ops.find(-1); err != nil {
 			lg.Fatal("directory scan failed", logseal.F{"error": err})
 		}
@@ -40,7 +48,7 @@ func main() {
 		}
 	} else {
 		pathDepth := depth(folder) + 1
-		ps := newPaths(folder, CLI.Matcher)
+		ps := newPaths(folder, compiledMatcher)
 		if err := ps.find(pathDepth); err != nil {
 			lg.Fatal("directory scan failed", logseal.F{"error": err})
 		}

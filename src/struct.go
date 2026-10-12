@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"regexp"
 )
 
 type tPath struct {
@@ -20,14 +21,14 @@ type tPathList []tPath
 
 type tPaths struct {
 	RootDir   string
-	RxMatcher string
+	RxMatcher *regexp.Regexp // Pre-compiled regex
 	List      tPathList
 	MaxDepth  int
 }
 
-func newPaths(rootDir, rxMatcher string) (ps tPaths) {
+func newPaths(rootDir string, compiledRx *regexp.Regexp) (ps tPaths) {
 	ps.RootDir = rootDir
-	ps.RxMatcher = rxMatcher
+	ps.RxMatcher = compiledRx
 	return
 }
 
