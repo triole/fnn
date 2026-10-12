@@ -10,72 +10,64 @@ import (
 	"github.com/triole/logseal"
 )
 
-func (ps *tPaths) find(depthToDetect int) {
-	lg.Debug("find", logseal.F{
-		"depth":   depthToDetect,
-		"folder":  ps.RootDir,
-		"matcher": ps.RxMatcher,
-	})
-	var pathList []string
-	var tempPaths tPathList
-	var err error = filepath.Walk(ps.RootDir, visit(&pathList, ps.RxMatcher))
-	lg.IfErrFatal(
-		"unable to detect files",
-		logseal.F{"error": err},
-	)
+// find scans directory tree and populates ps.List with matched paths
+// Returns error if directory traversal fails
+// depthToDetect: target depth to collect, or -1 for all depths
+func (ps *tPaths) find(depthToDetect int) error {
+	var pathList []tPath
+	var err error = filepath.Walk(ps.RootDir, visitPaths(&pathList, ps.RxMatcher))
+	if err != nil {
+		lg.Error("unable to detect files", logseal.F{"error": err})
+		return err
+	}
+
 	for _, p := range pathList {
-		pth := trimSuf(p)
-		inf, err := os.Stat(pth)
-		lg.IfErrError("failed to stat file", logseal.F{
-			"error": err,
-			"path":  pth,
-		})
-		if err == nil {
-			ext := strings.TrimPrefix(path.Ext(pth), ".")
-			pi := tPath{
-				Path:      pth,
-				Folder:    trimSuf(strings.Replace(pth, inf.Name(), "", -1)),
-				Name:      strings.TrimSuffix(inf.Name(), "."+ext),
-				Extension: ext,
-				IsFolder:  inf.IsDir(),
-				Depth:     depth(pth),
-			}
-			if depthToDetect == pi.Depth || depthToDetect < 0 {
-				tempPaths = append(tempPaths, pi)
-			}
-			if pi.IsFolder && ps.MaxDepth < pi.Depth {
-				ps.MaxDepth = pi.Depth
-			}
+		info := p.Info
+		ext := strings.TrimPrefix(path.Ext(p.Path), ".")
+		pi := tPath{
+			Path:      p.Path,
+			Folder:    trimSuf(parentDir(p.Path)),
+			Name:      strings.TrimSuffix(info.Name(), "."+ext),
+			Extension: ext,
+			IsFolder:  info.IsDir(),
+			Depth:     depth(p.Path),
+		}
+		if depthToDetect == pi.Depth || depthToDetect < 0 {
+			ps.List = append(ps.List, pi)
+		}
+		if pi.IsFolder && ps.MaxDepth < pi.Depth {
+			ps.MaxDepth = pi.Depth
 		}
 	}
-	if depthToDetect < 0 {
-		ps.List = tempPaths
-	} else {
-		for _, pth := range tempPaths {
-			if depthToDetect == pth.Depth {
-				ps.List = append(ps.List, pth)
-			}
-		}
-	}
+	
 	sort.Sort(tPathList(ps.List))
-	// ps.RootDir = ps.RootDir
 	lg.Info("got find results", logseal.F{
 		"depth":    depthToDetect,
 		"folder":   ps.RootDir,
 		"matcher":  ps.RxMatcher,
 		"no_files": len(ps.List),
-	},
-	)
+	})
+	return nil
 }
 
-func visit(files *[]string, rx string) filepath.WalkFunc {
+func parentDir(p string) string {
+	d := filepath.Dir(p)
+	if d == "." {
+		return ""
+	}
+	return d
+}
+
+func visitPaths(paths *[]tPath, rx string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			lg.Error("walk error", logseal.F{"error": err, "path": path})
-			return err // Let filepath.Walk handle it gracefully
+			return err
 		}
 		if rxMatch(rx, path) {
-			*files = append(*files, path)
+			*paths = append(*paths, tPath{
+				Path: path,
+				Info: info,
+			})
 		}
 		return nil
 	}

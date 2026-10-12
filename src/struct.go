@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path"
 )
 
@@ -12,6 +13,7 @@ type tPath struct {
 	Extension string
 	Depth     int
 	IsFolder  bool
+	Info      os.FileInfo // internal use during walk
 }
 
 type tPathList []tPath
