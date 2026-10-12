@@ -18,6 +18,9 @@ var (
 	appName        = "file name normalizer"
 	appDescription = "rename files removing special characters, leave only those that do not need to be escaped in shell"
 	appMainversion = "0.1"
+
+	// Regex patterns for build tag parsing
+	buildTagPattern *regexp.Regexp
 )
 
 var CLI struct {
@@ -32,8 +35,22 @@ var CLI struct {
 	VersionFlag bool   `help:"display version" short:"V"`
 }
 
+func init() {
+	// Pre-compile regex patterns at startup
+	var err error
+	buildTagPattern, err = regexp.Compile(`({|}|,)`)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal: regex compilation failed: %v\n", err)
+		os.Exit(1)
+	}
+}
+
 func parseArgs() {
-	curdir, _ := os.Getwd()
+	curdir, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: cannot determine current working directory: %v\n", err)
+		os.Exit(1)
+	}
 	ctx := kong.Parse(&CLI,
 		kong.Name(appName),
 		kong.Description(appDescription),
@@ -65,8 +82,7 @@ type tPrinterEl struct {
 }
 
 func printBuildTags(buildtags string) {
-	regexp, _ := regexp.Compile(`({|}|,)`)
-	s := regexp.ReplaceAllString(buildtags, "\n")
+	s := buildTagPattern.ReplaceAllString(buildtags, "\n")
 	s = strings.Replace(s, "_subversion: ", "version: "+appMainversion+".", -1)
 	fmt.Printf("\n%s\n%s\n\n", appName, appDescription)
 	arr := strings.Split(s, "\n")
