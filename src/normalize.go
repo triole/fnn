@@ -2,7 +2,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/triole/logseal"
@@ -17,9 +19,16 @@ var replacerSchemesStr string
 var replacerSchemes tReplacerSchemes
 
 type tReplacerSchemes []tReplacerScheme
+
 type tReplacerScheme struct {
-	Rx string
-	Nu string
+	Rx *regexp.Regexp  // Precompiled regex pattern
+	Nu string          // Replacement string
+}
+
+// tReplacerSchemeConfig is used for YAML unmarshaling
+type tReplacerSchemeConfig struct {
+	Rx string `yaml:"rx"`
+	Nu string `yaml:"nu"`
 }
 
 func (ps *tPaths) normalizeAll() (r string) {
@@ -47,12 +56,28 @@ func normalize(pth tPath, replacerSchemes tReplacerSchemes) (r tPath) {
 	return r
 }
 
-func initReplacerSchemes() (r tReplacerSchemes) {
-	err := yaml.Unmarshal([]byte(replacerSchemesStr), &r)
+func initReplacerSchemes() tReplacerSchemes {
+	var configSchemes []tReplacerSchemeConfig
+	err := yaml.Unmarshal([]byte(replacerSchemesStr), &configSchemes)
 	if err != nil {
-		lg.Fatal("error: %v", err)
+		fmt.Printf("Fatal error: failed to parse replacer schemes YAML: %v\n", err)
+		os.Exit(1)
 	}
-	return
+
+	// Convert config to precompiled schemes
+	schemes := make(tReplacerSchemes, len(configSchemes))
+	for i, cfg := range configSchemes {
+		rx, err := regexp.Compile(cfg.Rx)
+		if err != nil {
+			fmt.Printf("Fatal error: invalid regex in scheme %d: %v (pattern: %s)\n", i+1, err, cfg.Rx)
+			os.Exit(1)
+		}
+		schemes[i] = tReplacerScheme{
+			Rx: rx,
+			Nu: cfg.Nu,
+		}
+	}
+	return schemes
 }
 
 func rename(pth, npth tPath) {

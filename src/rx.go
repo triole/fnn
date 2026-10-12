@@ -21,9 +21,8 @@ func rxMatch(rx string, str string) bool {
 	return re.MatchString(str)
 }
 
-func rxReplaceAll(basestring, regex, newstring string) (r string) {
-	rx := regexp.MustCompile(regex)
-	r = rx.ReplaceAllString(basestring, newstring)
+func rxReplaceAll(basestring string, regex *regexp.Regexp, newstring string) (r string) {
+	r = regex.ReplaceAllString(basestring, newstring)
 	return
 }
 
