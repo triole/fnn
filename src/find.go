@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -72,7 +71,8 @@ func (ps *tPaths) find(depthToDetect int) {
 func visit(files *[]string, rx string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatal(err)
+			lg.Error("walk error", logseal.F{"error": err, "path": path})
+			return err // Let filepath.Walk handle it gracefully
 		}
 		if rxMatch(rx, path) {
 			*files = append(*files, path)
