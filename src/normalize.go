@@ -21,8 +21,8 @@ var replacerSchemes tReplacerSchemes
 type tReplacerSchemes []tReplacerScheme
 
 type tReplacerScheme struct {
-	Rx *regexp.Regexp  // Precompiled regex pattern
-	Nu string          // Replacement string
+	Rx *regexp.Regexp // Precompiled regex pattern
+	Nu string         // Replacement string
 }
 
 // tReplacerSchemeConfig is used for YAML unmarshaling
@@ -45,7 +45,7 @@ func normalize(pth tPath, replacerSchemes tReplacerSchemes) (r tPath) {
 	r.Name = toSnakeCase(r.Name)
 	r.Name = strings.ToLower(r.Name)
 	if r.IsFolder {
-		r.Name = strings.Replace(r.Name, ".", "_", -1)
+		r.Name = strings.ReplaceAll(r.Name, ".", "_")
 		r.Name = r.Name + r.Extension
 		r.Extension = ""
 	}

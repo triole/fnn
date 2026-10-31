@@ -27,6 +27,7 @@ var CLI struct {
 	Folder      string `help:"root folder in which to run the renamer, default is current folder" short:"f" default:"${curdir}"`
 	Matcher     string `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
 	Recursive   bool   `help:"recurse into sub directories, default is none" short:"r"`
+	Sanitize    string `help:"sanitize string and print result" short:"s"`
 	LogFile     string `help:"log file" default:"/dev/stdout"`
 	LogLevel    string `help:"log level" default:"info" enum:"trace,debug,info,error,fatal"`
 	LogNoColors bool   `help:"disable output colours, print plain text"`
