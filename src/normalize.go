@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/triole/logseal"
+	"golang.org/x/text/unicode/norm"
 	yaml "gopkg.in/yaml.v2"
 
 	_ "embed"
@@ -44,6 +45,8 @@ func normalize(pth tPath, replacerSchemes tReplacerSchemes) (r tPath) {
 	r = pth
 	r.Name = toSnakeCase(r.Name)
 	r.Name = strings.ToLower(r.Name)
+	// Decompose accents so the scheme's \p{Mn} rule can strip the marks.
+	r.Name = norm.NFD.String(r.Name)
 	if r.IsFolder {
 		r.Name = strings.ReplaceAll(r.Name, ".", "_")
 		r.Name = r.Name + r.Extension

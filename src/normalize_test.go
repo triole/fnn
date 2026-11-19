@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"unicode"
+
+	"golang.org/x/text/unicode/norm"
 )
 
 func TestNormalize(t *testing.T) {
@@ -107,6 +110,47 @@ func TestAccentedCharacters(t *testing.T) {
 	validateNormalize("o\u0308", "txt", "oe", "txt", rs, t)
 	validateNormalize("u\u0308", "txt", "ue", "txt", rs, t)
 	validateNormalize("A\u0308", "txt", "ae", "txt", rs, t)
+}
+
+// Every character whose lowercased NFD form is an ASCII base letter followed
+// only by nonspacing marks must normalize back to that base letter. A
+// diaeresis on a/o/u is transliterated instead of stripped, matching the
+// scheme order.
+func TestNFDCoverage(t *testing.T) {
+	rs := initReplacerSchemes()
+	for r := rune(0); r <= unicode.MaxRune; r++ {
+		s := string(r)
+		dec := norm.NFD.String(strings.ToLower(s))
+		decRunes := []rune(dec)
+		if len(decRunes) < 2 || decRunes[0] < 'a' || decRunes[0] > 'z' {
+			continue
+		}
+		allMn := true
+		for _, m := range decRunes[1:] {
+			if !unicode.Is(unicode.Mn, m) {
+				allMn = false
+				break
+			}
+		}
+		if !allMn {
+			continue
+		}
+		expected := string(decRunes[0])
+		if decRunes[1] == '\u0308' {
+			switch decRunes[0] {
+			case 'a':
+				expected = "ae"
+			case 'o':
+				expected = "oe"
+			case 'u':
+				expected = "ue"
+			}
+		}
+		got := normalize(tPath{Name: s}, rs).Name
+		if got != expected {
+			t.Errorf("U+%04X %q NFD %q: got %q, want %q", r, s, dec, got, expected)
+		}
+	}
 }
 
 func validateNormalize(inpName, inpExt, expName, expExt string, rs tReplacerSchemes, t *testing.T) {
