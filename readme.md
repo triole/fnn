@@ -17,59 +17,6 @@ File name normalizer that renames files and folder removing special characters. 
 
 Renaming schemes are stored inside the `replacer_schemes.yaml` file that contains a list of replace rules. A single rule consists of a regular expression and a replacement. All rules are processed in order from top to bottom. Here is what they look like.
 
-```go mdox-exec="tail -n+2 src/replacer_schemes.yaml"
-- rx: ä
-  nu: ae
-
-- rx: ö
-  nu: oe
-
-- rx: ü
-  nu: ue
-
-- rx: ß
-  nu: ss
-
-- rx: (à|á|â|ã|å)
-  nu: a
-
-- rx: (è|é|ê|ë)
-  nu: e
-
-- rx: (í|ì|î|ĩ|ï)
-  nu: i
-
-- rx: (ò|ó|ô|õ)
-  nu: o
-
-- rx: (ù|ú|û)
-  nu: u
-
-- rx: ç
-  nu: c
-
-- rx: " "
-  nu: _
-
-- rx: "[^a-z0-9_-]+"
-  nu: _
-
-- rx: "-+"
-  nu: "-"
-
-- rx: _+
-  nu: _
-
-- rx: "[-_]{2,}"
-  nu: _
-
-- rx: "[-_]+$"
-  nu: ""
-
-- rx: "([a-z]+)_([0-9]{1,2})$"
-  nu: "$1$2"
-```
-
 ## Help
 
 ```go mdox-exec="r -h"
@@ -85,10 +32,11 @@ Flags:
   -m, --matcher=".*"              regex matcher, process only paths that fit the
                                   expression
   -r, --recursive                 recurse into sub directories, default is none
-  -l, --log-file="/dev/stdout"    log file
-  -e, --log-level="info"          log level
-  -c, --log-no-colors             disable output colours, print plain text
-  -j, --log-json                  enable json log, instead of text one
+  -s, --sanitize=STRING           sanitize string and print result
+      --log-file="/dev/stdout"    log file
+      --log-level="info"          log level
+      --log-no-colors             disable output colours, print plain text
+      --log-json                  enable json log, instead of text one
   -n, --dry-run                   debug mode
   -V, --version-flag              display version
 ```
