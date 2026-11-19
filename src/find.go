@@ -36,7 +36,7 @@ func (ps *tPaths) find(depthToDetect int) error {
 		if depthToDetect == pi.Depth || depthToDetect < 0 {
 			ps.List = append(ps.List, pi)
 		}
-		if pi.IsFolder && ps.MaxDepth < pi.Depth {
+		if ps.MaxDepth < pi.Depth {
 			ps.MaxDepth = pi.Depth
 		}
 	}

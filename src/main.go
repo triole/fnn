@@ -48,7 +48,7 @@ func main() {
 			}
 
 			// process from deepest to shallowest to avoid path conflicts
-			for i := ops.MaxDepth; i >= depth(folder); i-- {
+			for i := ops.MaxDepth; i > depth(folder); i-- {
 				if group, exists := depthGroups[i]; exists {
 					tempPs := tPaths{RootDir: folder, List: group, MaxDepth: ops.MaxDepth}
 					tempPs.normalizeAll()
