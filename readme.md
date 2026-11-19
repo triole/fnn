@@ -63,7 +63,7 @@ Renaming schemes are stored inside the `replacer_schemes.yaml` file that contain
 - rx: "[-_]{2,}"
   nu: _
 
-- rx: _$
+- rx: "[-_]+$"
   nu: ""
 
 - rx: "([a-z]+)_([0-9]{1,2})$"
