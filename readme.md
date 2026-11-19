@@ -54,13 +54,13 @@ Renaming schemes are stored inside the `replacer_schemes.yaml` file that contain
 - rx: "[^a-z0-9_-]+"
   nu: _
 
-- rx: (_-|-_)
-  nu: _
-
 - rx: "-+"
   nu: "-"
 
 - rx: _+
+  nu: _
+
+- rx: "[-_]{2,}"
   nu: _
 
 - rx: _$
