@@ -63,7 +63,7 @@ func initReplacerSchemes() tReplacerSchemes {
 	var configSchemes []tReplacerSchemeConfig
 	err := yaml.Unmarshal([]byte(replacerSchemesStr), &configSchemes)
 	if err != nil {
-		fmt.Printf("Fatal error: failed to parse replacer schemes YAML: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Fatal error: failed to parse replacer schemes YAML: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -72,7 +72,7 @@ func initReplacerSchemes() tReplacerSchemes {
 	for i, cfg := range configSchemes {
 		rx, err := regexp.Compile(cfg.Rx)
 		if err != nil {
-			fmt.Printf("Fatal error: invalid regex in scheme %d: %v (pattern: %s)\n", i+1, err, cfg.Rx)
+			fmt.Fprintf(os.Stderr, "Fatal error: invalid regex in scheme %d: %v (pattern: %s)\n", i+1, err, cfg.Rx)
 			os.Exit(1)
 		}
 		schemes[i] = tReplacerScheme{

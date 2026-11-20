@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -23,18 +24,20 @@ var (
 	buildTagPattern *regexp.Regexp
 )
 
-var CLI struct {
-	Folder      string `help:"root folder in which to run the renamer, default is current folder" short:"f" default:"${curdir}"`
-	Matcher     string `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
-	Recursive   bool   `help:"recurse into sub directories, default is none" short:"r"`
-	Sanitize    string `help:"sanitize string and print result" short:"s"`
-	LogFile     string `help:"log file" default:"/dev/stdout"`
-	LogLevel    string `help:"log level" default:"info" enum:"trace,debug,info,error,fatal"`
-	LogNoColors bool   `help:"disable output colours, print plain text"`
-	LogJSON     bool   `help:"enable json log, instead of text one"`
-	DryRun      bool   `help:"debug mode" short:"n"`
-	VersionFlag bool   `help:"display version" short:"V"`
+type tCLI struct {
+	Folder      string  `help:"root folder in which to run the renamer, default is current folder" short:"f" default:"${curdir}"`
+	Matcher     string  `help:"regex matcher, process only paths that fit the expression" short:"m" default:".*"`
+	Recursive   bool    `help:"recurse into sub directories, default is none" short:"r"`
+	Sanitize    *string `help:"sanitize string and print result" short:"s" placeholder:"STRING"`
+	LogFile     string  `help:"log file" default:"/dev/stdout"`
+	LogLevel    string  `help:"log level" default:"info" enum:"trace,debug,info,error,fatal"`
+	LogNoColors bool    `help:"disable output colours, print plain text"`
+	LogJSON     bool    `help:"enable json log, instead of text one"`
+	DryRun      bool    `help:"debug mode" short:"n"`
+	VersionFlag bool    `help:"display version" short:"V"`
 }
+
+var CLI tCLI
 
 func init() {
 	// Pre-compile regex patterns at startup
@@ -47,15 +50,40 @@ func init() {
 }
 
 func parseArgs() {
-	curdir, err := os.Getwd()
+	parser, err := newArgParser(&CLI)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: cannot determine current working directory: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: cannot initialize argument parser: %v\n", err)
 		os.Exit(1)
 	}
-	ctx := kong.Parse(&CLI,
+	ctx, err := parser.Parse(os.Args[1:])
+	if err != nil {
+		// Diagnostics go to stderr only. Kong's usage-on-error prints the
+		// full help to stdout, which a shell capture such as
+		// `value=$(fnn -s "$arg")` would silently swallow.
+		fmt.Fprintf(os.Stderr, "%s: error: %v\n", appName, err)
+		exitCode := 1
+		var parseErr *kong.ParseError
+		if errors.As(err, &parseErr) {
+			exitCode = parseErr.ExitCode()
+		}
+		os.Exit(exitCode)
+	}
+	_ = ctx.Run()
+
+	if CLI.VersionFlag {
+		printBuildTags(BUILDTAGS)
+		os.Exit(0)
+	}
+}
+
+func newArgParser(cli *tCLI) (*kong.Kong, error) {
+	curdir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	return kong.New(cli,
 		kong.Name(appName),
 		kong.Description(appDescription),
-		kong.UsageOnError(),
 		kong.ConfigureHelp(kong.HelpOptions{
 			Compact:      true,
 			Summary:      true,
@@ -67,13 +95,6 @@ func parseArgs() {
 			"config": path.Join(getBindir(), appName+".toml"),
 		},
 	)
-	_ = ctx.Run()
-
-	if CLI.VersionFlag {
-		printBuildTags(BUILDTAGS)
-		os.Exit(0)
-	}
-	// ctx.FatalIfErrorf(err)
 }
 
 type tPrinter []tPrinterEl
